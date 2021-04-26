@@ -1,6 +1,3 @@
-// This is because of the Crate name.
-// please use snake_case when possible
-
 // Currently unused functions are hard coded.
 #![allow(dead_code)]
 
@@ -26,7 +23,7 @@ fn main() {
 
     // Get the paths of all the input files.
     let files = std::fs::read_dir(&in_folder)
-        .expect("Folder does not exist")
+        .expect(" Folder does not exist. ")
         .map(|d| d.unwrap().path())
         .collect::<Vec<PathBuf>>();
 
@@ -41,23 +38,21 @@ fn main() {
 
 // Start up function that will run a given file.
 fn start_manipulation(file_in: PathBuf, file_out: PathBuf) {
-    let loaded_image = image::open(&file_in).expect("Image does not Exist");
+    let loaded_image = image::open(&file_in).expect(" Image does not Exist. ");
     let new_image: DynamicImage = per_pixel_loop(loaded_image);
-    new_image.save(file_out).expect("Could not save");
+    new_image.save(file_out).expect(" Could not save. ");
 }
 
 // Pixel loop loops over every pixel and applies a given function to it.
 fn per_pixel_loop(mut loaded_image: DynamicImage) -> DynamicImage {
     let rgb: &mut ImageBuffer<Rgb<u8>, Vec<u8>> = loaded_image.as_mut_rgb8().unwrap();
-    let height = rgb.height();
-    let width = rgb.width();
 
     // Loop over every pixel and apply the function to it.
-    for y in 0..height {
-        for x in 0..width {
+    for y in 0..rgb.height() {
+        for x in 0..rgb.width() {
             let color: &mut Rgb<u8> = rgb.get_pixel_mut(x, y);
 
-            apply::colored_shaded_levels(color);
+            apply::desaturate(color);
         }
     }
 

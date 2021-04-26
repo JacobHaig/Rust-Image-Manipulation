@@ -42,7 +42,7 @@ pub fn desaturate(colr: &mut Rgb<u8>) {
 }
 
 pub fn greyscale_shaded_levels(colr: &mut Rgb<u8>) {
-    let num_levels: f32 = 8.;
+    let num_levels: f32 = 4.;
 
     let avg: u8 = ((colr[0] as i16 + colr[1] as i16 + colr[2] as i16) / 3) as u8;
     let normal = util::normalize(avg as f32, 0 as f32, 255., 0., num_levels as f32) as u8;
