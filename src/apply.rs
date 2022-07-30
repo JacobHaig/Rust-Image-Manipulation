@@ -42,7 +42,7 @@ pub fn desaturate(colr: &mut Rgb<u8>) {
 }
 
 pub fn greyscale_shaded_levels(colr: &mut Rgb<u8>) {
-    let num_levels: f32 = 8.;
+    let num_levels: f32 = 20.;
 
     let avg: u8 = ((colr[0] as i16 + colr[1] as i16 + colr[2] as i16) / 3) as u8;
     let normal = util::normalize(avg as f32, 0 as f32, 255., 0., num_levels as f32) as u8;
@@ -55,7 +55,7 @@ pub fn greyscale_shaded_levels(colr: &mut Rgb<u8>) {
 }
 
 pub fn colored_shaded_levels(colr: &mut Rgb<u8>) {
-    let num_levels: f32 = 15.0;
+    let num_levels: f32 = 10.0;
 
     let r_normal = util::normalize(colr[0] as f32, 0., 255., 0., num_levels) as u8;
     let g_normal = util::normalize(colr[1] as f32, 0., 255., 0., num_levels) as u8;
@@ -68,4 +68,17 @@ pub fn colored_shaded_levels(colr: &mut Rgb<u8>) {
     colr[0] = r_shaded;
     colr[1] = g_shaded;
     colr[2] = b_shaded;
+}
+
+pub fn apply_color(mut pixel: [u8; 3], color: [u8; 3], percentage: f32) -> [u8; 3] {
+    use lerp::Lerp;
+
+    // pixel[0] = (pixel[0] as f32).lerp(color[0] as f32, percentage) as u8;
+    // pixel[1] = (pixel[1] as f32).lerp(color[1] as f32, percentage) as u8;
+    // pixel[2] = (pixel[2] as f32).lerp(color[2] as f32, percentage) as u8;
+    pixel[0] = color[0];
+    pixel[1] = color[1];
+    pixel[2] = color[2];
+
+    pixel
 }
