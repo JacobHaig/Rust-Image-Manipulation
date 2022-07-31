@@ -35,7 +35,7 @@ fn main() {
     // start_manipulation(in_folder, out_folder);
 
     let file1 = PathBuf::from("image/in/landscape.jpg");
-    let file2 = PathBuf::from("image/in/white.jpg");
+    let file2 = PathBuf::from("image/in/landscape_white.jpg");
     let output = PathBuf::from("image/out/new.jpg");
 
     compare_images(file1, file2, output);
@@ -77,36 +77,35 @@ fn change_image(image: &DynamicImage, size: f32) -> DynamicImage {
     let width = image.width();
     let height = image.height();
 
-    let x = rng.gen_range(0..width + 10) - 10;
-    let y = rng.gen_range(0..height + 10) - 10;
-    let w = rng.gen_range(0..max_size);
-    let h = w;
+    let x_offset = rng.gen_range(0..width + 10) - 10;
+    let y_offset = rng.gen_range(0..height + 10) - 10;
+    let rect_width = rng.gen_range(0..max_size);
+    let rect_height = rng.gen_range(0..max_size);
 
     let color = [
         rand::random::<u8>(),
         rand::random::<u8>(),
         rand::random::<u8>(),
-        // rand::random::<u8>(),
     ];
     let percentage = rand::random::<f32>();
 
     // let mut sub_image = image.sub_image(x, y, w, h);
     let rgb = image.as_mut_rgb8().unwrap();
 
-    for a in 0..w {
-        for b in 0..h {
+    for a in 0..rect_width {
+        for b in 0..rect_height {
             // println!("{}  {}", a, b);
 
             let pixel = rgb.get_pixel(
-                num::clamp(x + a, 0, width - 1),
-                num::clamp(y + b, 0, height - 1),
+                num::clamp(x_offset + a, 0, width - 1),
+                num::clamp(y_offset + b, 0, height - 1),
             );
 
             let new_pixel = image::Rgb::from(apply::apply_color(pixel.0, color, percentage));
 
             rgb.put_pixel(
-                num::clamp(x + a, 0, width - 1),
-                num::clamp(y + b, 0, height - 1),
+                num::clamp(x_offset + a, 0, width - 1),
+                num::clamp(y_offset + b, 0, height - 1),
                 new_pixel,
             );
         }
@@ -120,8 +119,8 @@ fn compare_images(file1: PathBuf, file2: PathBuf, output: PathBuf) {
     let mut image_compare = image::open(&file2).expect("Image does not Exist.");
     let mut value_previous = 10000000000000000;
 
-    for i in 1..100001 {
-        let size = num::clamp((100000. / (i as f32).powf(0.7)) - 17., 1., 1000.);
+    for i in 1..200001 {
+        let size = num::clamp((100000. / (i as f32).powf(0.7)), 1., 1000.);
         // let size = 200.0;
 
         let image_new = change_image(&image_compare, size);
@@ -129,7 +128,6 @@ fn compare_images(file1: PathBuf, file2: PathBuf, output: PathBuf) {
         let value = evaluate_likeness(&image_main, &image_new);
 
         if value < value_previous {
-            println!("{} : value_previous {}: value {}", i, value_previous, value); 
             image_compare = image_new;
             value_previous = value;
         }
