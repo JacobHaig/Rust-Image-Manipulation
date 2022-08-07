@@ -70,12 +70,37 @@ pub fn colored_shaded_levels(colr: &mut Rgb<u8>) {
     colr[2] = b_shaded;
 }
 
-pub fn apply_color(mut pixel: [u8; 3], color: [u8; 3], percentage: f32) -> [u8; 3] {
+pub fn apply_color_region(
+    image: &mut DynamicImage,
+    color: [u8; 3],
+    x_start: u32,
+    y_start: u32,
+    x_end: u32,
+    y_end: u32,
+) {
+    let rgb = image.as_mut_rgb8().unwrap();
+    for x in x_start..x_end {
+        for y in y_start..y_end {
+            let pixel = rgb.get_pixel(x, y);
+
+            let new_pixel = image::Rgb::from(apply_color(pixel.0, color));
+
+            rgb.put_pixel(x, y, new_pixel);
+        }
+    }
+}
+
+pub fn apply_color_percent(mut pixel: [u8; 3], color: [u8; 3], percentage: f32) -> [u8; 3] {
     use lerp::Lerp;
 
-    // pixel[0] = (pixel[0] as f32).lerp(color[0] as f32, percentage) as u8;
-    // pixel[1] = (pixel[1] as f32).lerp(color[1] as f32, percentage) as u8;
-    // pixel[2] = (pixel[2] as f32).lerp(color[2] as f32, percentage) as u8;
+    pixel[0] = (pixel[0] as f32).lerp(color[0] as f32, percentage) as u8;
+    pixel[1] = (pixel[1] as f32).lerp(color[1] as f32, percentage) as u8;
+    pixel[2] = (pixel[2] as f32).lerp(color[2] as f32, percentage) as u8;
+
+    pixel
+}
+
+pub fn apply_color(mut pixel: [u8; 3], color: [u8; 3]) -> [u8; 3] {
     pixel[0] = color[0];
     pixel[1] = color[1];
     pixel[2] = color[2];
