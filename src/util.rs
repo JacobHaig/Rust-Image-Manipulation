@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 // Clamp forces a value in between to specified values.
 // Returns the value between the given range.
 pub fn clamp<T>(value: T, min: T, max: T) -> T
@@ -23,4 +25,25 @@ where
     I: Copy + num::Num,
 {
     to_min + ((value.as_() - from_min) * (to_max - to_min)) / (from_max - from_min)
+}
+
+// Will create all folders if the folders do not exist
+pub fn check_folder_exists(folder: &PathBuf) {
+    let cur_dir = std::env::current_dir().unwrap();
+
+    if std::path::Path::exists(folder) {
+        std::fs::create_dir_all(cur_dir.join(folder)).unwrap();
+    }
+}
+
+// Get files will return all the files in a given folder.
+pub fn get_files(in_folder: &PathBuf) -> Vec<PathBuf> {
+    // If folders dont exist, create them.
+    check_folder_exists(in_folder);
+
+    // Get the paths of all the files.
+    std::fs::read_dir(&in_folder)
+        .unwrap()
+        .map(|d| d.unwrap().path())
+        .collect::<Vec<PathBuf>>()
 }
