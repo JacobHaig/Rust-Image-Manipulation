@@ -34,10 +34,9 @@ fn main() {
     // start_manipulation(in_folder, out_folder);
 
     let file1 = PathBuf::from("image/in/landscape.jpg");
-    let file2 = PathBuf::from("image/in/landscape_black.jpg");
     let output = PathBuf::from("image/out/new.jpg");
 
-    quad_setup(file1, file2, output);
+    quad_setup(file1, output);
 }
 
 // Start up function that will run a given file.
@@ -155,9 +154,13 @@ fn evaluate_likeness(image: &DynamicImage, other_image: &DynamicImage) -> i64 {
         .sum()
 }
 
-fn quad_setup(file1: PathBuf, file2: PathBuf, output: PathBuf) {
+fn quad_setup(file1: PathBuf, output: PathBuf) {
     let image_main = image::open(&file1).expect("Image does not Exist.");
-    let mut image = image::open(&file2).expect("Image does not Exist.");
+
+    let mut image = image::DynamicImage::ImageRgb8(image::RgbImage::new(
+        image_main.width(),
+        image_main.height(),
+    ));
 
     let width = image_main.width();
     let height = image_main.height();
@@ -177,7 +180,7 @@ fn quad_image(
     x_end: u32,
     y_end: u32,
 ) {
-    let size = 20;
+    let size = 100;
     if (x_end - x_start <= size) || (y_end - y_start <= size) {
         return;
     }
