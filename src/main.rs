@@ -2,8 +2,8 @@
 #![allow(dead_code)]
 
 use image::*;
-use util::{get_files, check_folder_exists};
 use std::path::*;
+use util::{check_folder_exists, get_files};
 
 mod apply;
 mod imagetools;
@@ -11,15 +11,18 @@ mod processes;
 mod util;
 
 fn main() {
-    check_folder_exists(& PathBuf::from("image/in"));
-    check_folder_exists(& PathBuf::from("image/out"));
+    check_folder_exists(&PathBuf::from("image/in"));
+    check_folder_exists(&PathBuf::from("image/out"));
 
     // start_manipulation(in_folder, out_folder);
 
-    let file1 = PathBuf::from("image/in/pink.jpg");
+    let file1 = PathBuf::from("image/in/landscape.jpg");
     let output = PathBuf::from("image/out/new.jpg");
 
+    let start = std::time::Instant::now();
     processes::quad_setup(file1, output);
+
+    println!("Time: {} seconds", start.elapsed().as_secs_f32());
 }
 
 // Start up function that will run a given file.

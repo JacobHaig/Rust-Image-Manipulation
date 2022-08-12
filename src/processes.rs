@@ -28,8 +28,6 @@ fn generate_from_random(file1: PathBuf, output: PathBuf) {
     image_compare.save(output).expect("Could not save.");
 }
 
-
-
 pub fn quad_setup(file1: PathBuf, output: PathBuf) {
     let image_main = image::open(&file1).expect("Image does not Exist.");
 
@@ -56,47 +54,44 @@ fn quad_process_image(
     x_end: u32,
     y_end: u32,
 ) {
-    let size = 15;
-    if (x_end - x_start <= size) || (y_end - y_start <= size) {
+    let size = 5;
+    if (x_end - x_start <= size) && (y_end - y_start <= size) {
         return;
     }
 
     // let mut value_previous = evaluate_likeness(image_main, image);
     let mut value_previous = 10000000000000000;
-    let incr = 10;
+    let incr = 5;
 
     for i in 0..3 {
-        loop {
-            let mut new_image = image.clone();
+        for x in 0..2 {
+            loop {
+                let mut new_image = image.clone();
 
-            color[i] += incr;
+                if x == 0 {
+                    color[i] += incr;
+                } else {
+                    color[i] -= incr;
+                }
 
-            apply::apply_color_region(&mut new_image, color, x_start, y_start, x_end, y_end);
-            let value = imagetools::evaluate_likeness(image_main, &new_image);
+                apply::apply_color_region(&mut new_image, color, x_start, y_start, x_end, y_end);
+                // let value = imagetools::evaluate_likeness3(image_main, &new_image);
+                let value = imagetools::evaluate_likeness4(
+                    image_main, &new_image, x_start, y_start, x_end, y_end,
+                );
 
-            if value < value_previous {
-                *image = new_image;
-                value_previous = value;
-            } else {
-                color[i] -= incr;
-                break;
-            }
-        }
+                if value < value_previous {
+                    *image = new_image;
+                    value_previous = value;
+                } else {
+                    if x == 0 {
+                        color[i] -= incr;
+                    } else {
+                        color[i] += incr;
+                    }
 
-        loop {
-            let mut new_image = image.clone();
-
-            color[i] -= incr;
-
-            apply::apply_color_region(&mut new_image, color, x_start, y_start, x_end, y_end);
-            let value = imagetools::evaluate_likeness(image_main, &new_image);
-
-            if value < value_previous {
-                *image = new_image;
-                value_previous = value;
-            } else {
-                color[i] += incr;
-                break;
+                    break;
+                }
             }
         }
     }
